@@ -11,6 +11,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "boxes/send_credits_box.h" // CreditsEmoji.
 #include "history/history.h"
 #include "history/history_item.h"
+#include "history/history_stress_text.h"
 #include "history/view/history_view_element.h"
 #include "history/view/history_view_cursor_state.h"
 #include "history/view/history_view_text_helper.h"
@@ -569,7 +570,11 @@ Ui::Text::String Media::createCaption(not_null<HistoryItem*> item) const {
 	});
 	result.setMarkedText(
 		st::messageTextStyle,
-		item->translatedTextWithLocalEntities(),
+		HistoryStress::Display(
+			item,
+			item->translatedTextWithLocalEntities(
+				HistoryStress::ShowingOriginal(item)),
+			item->translatedRichPage()).text,
 		Ui::ItemTextOptions(item),
 		context);
 	InitElementTextPart(_parent, result);

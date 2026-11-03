@@ -10,6 +10,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "base/runtime_composer.h"
 #include "data/data_media_types.h"
 #include "history/history_item_edition.h"
+#include "history/history_stress_text.h"
 
 #include <any>
 
@@ -458,7 +459,8 @@ public:
 	[[nodiscard]] TextWithEntities inReplyText() const;
 	[[nodiscard]] const TextWithEntities &originalText() const;
 	[[nodiscard]] const TextWithEntities &translatedText() const;
-	[[nodiscard]] TextWithEntities translatedTextWithLocalEntities() const;
+	[[nodiscard]] TextWithEntities translatedTextWithLocalEntities(
+		bool useOriginal = false) const;
 	[[nodiscard]] const std::vector<ClickHandlerPtr> &customTextLinks() const;
 	[[nodiscard]] TextForMimeData clipboardText() const;
 
@@ -841,6 +843,10 @@ private:
 	HistoryView::Element *_mainView = nullptr;
 
 	friend class HistoryView::Element;
+	friend HistoryStress::DisplayResult HistoryStress::Display(
+		not_null<HistoryItem*> item,
+		const TextWithEntities &text,
+		std::shared_ptr<const Iv::RichPage> page);
 	friend class HistoryView::Message;
 	friend class HistoryView::Service;
 	friend class HistoryView::ServiceMessagePainter;

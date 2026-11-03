@@ -19,6 +19,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/view/history_view_cursor_state.h"
 #include "history/history_item_components.h"
 #include "history/history_item_helpers.h"
+#include "history/history_stress_text.h"
 #include "history/view/media/history_view_media_generic.h"
 #include "history/view/media/history_view_web_page.h"
 #include "history/view/media/history_view_suggest_decision.h"
@@ -5091,7 +5092,7 @@ SelectedQuote Message::selectedQuote(TextSelection selection) const {
 	const auto item = textItem ? textItem : data().get();
 	const auto &translated = item->translatedText();
 	const auto &original = item->originalText();
-	if (&translated != &original
+	if ((&translated != &original && !HistoryStress::ShowingOriginal(item))
 		|| selection.empty()
 		|| selection == FullSelection) {
 		return {};
@@ -5129,7 +5130,7 @@ TextSelection Message::selectionFromQuote(
 	const auto item = quote.item;
 	const auto &translated = item->translatedText();
 	const auto &original = item->originalText();
-	if (&translated != &original) {
+	if (&translated != &original && !HistoryStress::ShowingOriginal(item)) {
 		return {};
 	} else if (hasVisibleText()) {
 		const auto media = this->media();
@@ -5305,7 +5306,7 @@ MessageSelection Message::adjustSelection(
 TextSelection Message::selectionForEdit(
 		const MessageSelection &selection) const {
 	return selection.isFlat()
-		? selection.flatRangeForEdit()
+		? Element::selectionForEdit(selection)
 		: TextSelection();
 }
 

@@ -4217,11 +4217,14 @@ const TextWithEntities &HistoryItem::translatedText() const {
 	}
 }
 
-TextWithEntities HistoryItem::translatedTextWithLocalEntities() const {
+TextWithEntities HistoryItem::translatedTextWithLocalEntities(
+		bool useOriginal) const {
 	if (isService()) {
 		return {};
 	}
-	auto result = withLocalEntities(translatedText());
+	auto result = withLocalEntities(useOriginal
+		? originalText()
+		: translatedText());
 
 	if (hideLinks()) {
 		const auto isUrl = [](const EntityInText &entity) {

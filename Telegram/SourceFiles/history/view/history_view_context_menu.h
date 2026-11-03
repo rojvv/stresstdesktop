@@ -60,6 +60,10 @@ base::unique_qptr<Ui::PopupMenu> FillContextMenu(
 	const ContextMenuRequest &request);
 
 void InsertPollHiddenResultsLabel(not_null<Ui::PopupMenu*> menu);
+void AddStressAction(
+	not_null<Ui::PopupMenu*> menu,
+	HistoryItem *item,
+	HistoryItem *fallback = nullptr);
 void InsertPollVoteRestrictionsLabel(
 	not_null<Ui::PopupMenu*> menu,
 	not_null<HistoryItem*> item,

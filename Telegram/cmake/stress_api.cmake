@@ -1,0 +1,5 @@
+if (NOT DEFINED ENV{API_ID} OR NOT DEFINED ENV{API_HASH})
+    message(FATAL_ERROR "Export API_ID and API_HASH before configuring Telegram.")
+endif()
+set(TDESKTOP_API_ID "$ENV{API_ID}" CACHE STRING "Telegram API ID")
+set(TDESKTOP_API_HASH "$ENV{API_HASH}" CACHE STRING "Telegram API hash")

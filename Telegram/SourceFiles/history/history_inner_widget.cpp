@@ -3696,6 +3696,10 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 					}
 				}
 				if (!item->isService() && view && actionText.isEmpty()) {
+					HistoryView::AddStressAction(
+						_menu,
+						albumPartItem,
+						view->textItem());
 					const auto hasRestriction = hasCopyRestriction(item);
 					if (!hasRestriction
 						&& (view->hasVisibleText() || mediaHasTextForCopy)) {

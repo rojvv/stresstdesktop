@@ -1,4 +1,5 @@
 /out/
+/.stress-build/
 Debug/
 Release/
 /ThirdParty/

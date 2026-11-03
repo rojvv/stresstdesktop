@@ -12,6 +12,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history.h"
 #include "history/history_item.h"
 #include "history/history_message_selection.h"
+#include "history/history_stress_text.h"
 #include "iv/markdown/iv_markdown_article.h"
 #include "iv/iv_rich_page.h"
 #include "iv/iv_rich_page_quote.h"
@@ -59,7 +60,8 @@ void AppendDisplayRanges(
 	if (!model
 		|| (quote.page != rich->page)
 		|| (quote.page != item->richPage())
-		|| (&item->translatedText() != &item->originalText())) {
+		|| (&item->translatedText() != &item->originalText()
+			&& !HistoryStress::ShowingOriginal(item))) {
 		return result;
 	}
 	AppendDisplayRanges(
@@ -289,7 +291,8 @@ std::optional<Iv::BuiltRichQuote> RichQuoteForSelection(
 	const auto model = page ? page->quoteModel.get() : nullptr;
 	if (!model
 		|| (rich->page != item->richPage())
-		|| (&item->translatedText() != &item->originalText())) {
+		|| (&item->translatedText() != &item->originalText()
+			&& !HistoryStress::ShowingOriginal(item))) {
 		return std::nullopt;
 	}
 	const auto range = SelectionRange(rich->article, *model, selection);

@@ -27,6 +27,11 @@ if (APPLE)
     enable_language(OBJC OBJCXX)
 endif()
 
+option(TDESKTOP_STRESS_TESTS "Build stress marking regression tests" OFF)
+if (TDESKTOP_STRESS_TESTS)
+    enable_testing()
+endif()
+
 if (configuration_types_init
     AND CMAKE_CONFIGURATION_TYPES
     AND NOT MinSizeRel IN_LIST CMAKE_CONFIGURATION_TYPES)

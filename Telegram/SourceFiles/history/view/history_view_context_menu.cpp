@@ -29,6 +29,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item_components.h"
 #include "history/history_item_helpers.h"
 #include "history/history_item_text.h"
+#include "history/history_stress_text.h"
 #include "history/view/history_view_schedule_box.h"
 #include "history/view/media/history_view_media.h"
 #include "history/view/media/menu/history_view_poll_menu.h"
@@ -1762,6 +1763,30 @@ ContextMenuRequest::ContextMenuRequest(
 : navigation(navigation) {
 }
 
+void AddStressAction(
+		not_null<Ui::PopupMenu*> menu,
+		HistoryItem *item,
+		HistoryItem *fallback) {
+	if (!item || !HistoryStress::CanToggle(item)) {
+		item = fallback;
+	}
+	if (!item || !HistoryStress::CanToggle(item)) {
+		return;
+	}
+	const auto owner = &item->history()->owner();
+	const auto id = item->fullId();
+	menu->addAction(
+		HistoryStress::ShowingOriginal(item)
+			? tr::lng_context_show_stress_marks(tr::now)
+			: tr::lng_context_view_unstressed_original(tr::now),
+		[=] {
+			if (const auto current = owner->message(id)) {
+				HistoryStress::ToggleOriginal(current);
+			}
+		},
+		&st::menuIconTranslate);
+}
+
 void FillContextMenuItems(
 		not_null<Ui::PopupMenu*> result,
 		not_null<ListWidget*> list,
@@ -1788,6 +1813,9 @@ void FillContextMenuItems(
 		&& Api::WhoReactedExists(item, Api::WhoReactedList::All);
 
 	AddReplyToMessageAction(result, request, list);
+	if (!hasSelection) {
+		AddStressAction(result, item, view ? view->textItem() : nullptr);
+	}
 	if (item) {
 		const auto media = item->media();
 		const auto document = media ? media->document() : nullptr;

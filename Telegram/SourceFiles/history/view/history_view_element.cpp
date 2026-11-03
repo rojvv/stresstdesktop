@@ -33,6 +33,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history.h"
 #include "history/history_item_components.h"
 #include "history/history_item_helpers.h"
+#include "history/history_stress_text.h"
 #include "data/data_channel.h"
 #include "data/data_session.h"
 #include "iv/iv_cached_media.h"
@@ -2240,6 +2241,7 @@ void Element::validateText() {
 		return;
 	}
 	const auto &text = _textItem->_text;
+	const auto sourcePage = _textItem->translatedRichPage();
 	auto richPage = std::shared_ptr<const Iv::RichPage>();
 	if (!summaryShownChanged && _text.isEmpty() == text.empty()) {
 	} else if (_flags & Flag::ServiceMessage) {
@@ -2275,14 +2277,24 @@ void Element::validateText() {
 		if (!unavailable.isEmpty()) {
 			setTextWithLinks(tr::italic(unavailable));
 		} else {
-			setTextWithLinks(_textItem->translatedTextWithLocalEntities());
-			richPage = _textItem->translatedRichPage();
+			const auto display = HistoryStress::Display(
+				_textItem,
+				_textItem->translatedTextWithLocalEntities(
+					HistoryStress::ShowingOriginal(_textItem)),
+				sourcePage);
+			setTextWithLinks(display.text);
+			richPage = display.page;
 		}
 	}
 	if (!richPage
+		&& sourcePage
 		&& !(_flags & Flag::ServiceMessage)
 		&& item->computeUnavailableReason().isEmpty()) {
-		richPage = _textItem->translatedRichPage();
+		richPage = HistoryStress::Display(
+			_textItem,
+			_textItem->translatedTextWithLocalEntities(
+				HistoryStress::ShowingOriginal(_textItem)),
+			sourcePage).page;
 	}
 	ensureRichPage(std::move(richPage));
 }
@@ -3328,7 +3340,12 @@ MessageSelection Element::adjustSelection(
 
 TextSelection Element::selectionForEdit(
 		const MessageSelection &selection) const {
-	return selection.flatRangeForEdit();
+	auto result = selection.flatRangeForEdit();
+	if (_textItem) {
+		result.from = HistoryStress::ToOriginal(_textItem, result.from);
+		result.to = HistoryStress::ToOriginal(_textItem, result.to);
+	}
+	return result;
 }
 
 bool Element::selectionContains(
@@ -3368,6 +3385,8 @@ SelectedQuote Element::FindSelectedQuote(
 				int(modified.to) - int(modification.added)));
 		}
 	}
+	modified.from = HistoryStress::ToOriginal(item, modified.from);
+	modified.to = HistoryStress::ToOriginal(item, modified.to);
 	auto result = item->originalText();
 	if (modified.empty() || modified.to > result.text.size()) {
 		return {};
@@ -3418,10 +3437,13 @@ TextSelection Element::FindSelectionFromQuote(
 		return {};
 	}
 	const auto &original = quote.item->originalText();
+	const auto toDisplay = [&](TextSelection selection) {
+		selection.from = HistoryStress::ToMarked(quote.item, selection.from);
+		selection.to = HistoryStress::ToMarked(quote.item, selection.to);
+		return ApplyModificationsFrom(selection, text);
+	};
 	if (quote.highlight.quoteOffset == kSearchQueryOffsetHint) {
-		return ApplyModificationsFrom(
-			FindSearchQueryHighlight(original.text, rich.text),
-			text);
+		return toDisplay(FindSearchQueryHighlight(original.text, rich.text));
 	}
 	const auto length = int(original.text.size());
 	const auto qlength = int(rich.text.size());
@@ -3486,7 +3508,7 @@ TextSelection Element::FindSelectionFromQuote(
 	if (result.empty()) {
 		return {};
 	}
-	return ApplyModificationsFrom(result, text);
+	return toDisplay(result);
 }
 
 Ui::ChatPaintRichQuote Element::richSelectionFromQuote(
@@ -3501,7 +3523,8 @@ Ui::ChatPaintRichQuote Element::richSelectionFromQuote(
 	const auto item = quote.item;
 	const auto &translated = item->translatedText();
 	const auto &original = item->originalText();
-	if (&translated != &original || rich->page != item->richPage()) {
+	if ((&translated != &original && !HistoryStress::ShowingOriginal(item))
+		|| rich->page != item->richPage()) {
 		return {};
 	}
 	const auto found = Iv::LocateRichQuote(

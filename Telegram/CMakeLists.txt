@@ -35,6 +35,7 @@ include(cmake/td_export.cmake)
 include(cmake/td_gram.cmake)
 include(cmake/td_iv.cmake)
 include(cmake/td_lang.cmake)
+include(cmake/td_stress.cmake)
 include(cmake/td_mtproto.cmake)
 include(cmake/td_scheme.cmake)
 include(cmake/td_tde2e.cmake)
@@ -78,6 +79,7 @@ PRIVATE
     tdesktop::td_gram
     tdesktop::td_iv
     tdesktop::td_lang
+    tdesktop::td_stress
     tdesktop::td_mtproto
     tdesktop::td_scheme
     tdesktop::td_tde2e
@@ -1233,6 +1235,8 @@ PRIVATE
     history/history_item_reply_markup.h
     history/history_item_text.cpp
     history/history_item_text.h
+    history/history_stress_text.cpp
+    history/history_stress_text.h
     history/history_inner_widget.cpp
     history/history_inner_widget.h
     history/history_inner_widget_accessibility.cpp
