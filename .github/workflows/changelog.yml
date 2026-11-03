@@ -1,6 +1,6 @@
 name: Changelog
 
-on:
+"on":
   push:
     branches: [dev]
     paths: [changelog.txt]

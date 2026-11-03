@@ -1,6 +1,6 @@
 name: User-agent updater.
 
-on:
+"on":
   repository_dispatch:
     types: ["Restart user_agent_updater workflow."]
   schedule:

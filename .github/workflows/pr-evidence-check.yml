@@ -1,6 +1,6 @@
 name: PR evidence check.
 
-on:
+"on":
   pull_request_target:
     types: [opened, edited, reopened]
 

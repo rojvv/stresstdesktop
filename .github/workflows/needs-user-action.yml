@@ -1,6 +1,6 @@
 name: Needs user action.
 
-on:
+"on":
   issue_comment:
     types: [created]
   schedule:

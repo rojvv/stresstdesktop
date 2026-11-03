@@ -1,6 +1,6 @@
 name: MacOS Packaged.
 
-on:
+"on":
   push:
     # Pushes to the canary or private-ci branches run their own workflows.
     branches-ignore:

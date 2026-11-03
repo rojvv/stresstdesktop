@@ -1,6 +1,6 @@
 name: Copyright year updater.
 
-on:
+"on":
   repository_dispatch:
     types: ["Restart copyright_year_updater workflow."]
   schedule:

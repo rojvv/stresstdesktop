@@ -1,6 +1,6 @@
 name: Waiting for answer.
 
-on:
+"on":
   issue_comment:
     types: [created]
   schedule:

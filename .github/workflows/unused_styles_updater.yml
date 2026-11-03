@@ -1,6 +1,6 @@
 name: Unused styles updater.
 
-on:
+"on":
   repository_dispatch:
     types: ["Restart unused_styles_updater workflow."]
   schedule:

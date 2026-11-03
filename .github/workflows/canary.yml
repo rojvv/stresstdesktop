@@ -103,7 +103,7 @@
 
 name: Canary.
 
-on:
+"on":
   push:
     branches:
       - public-canary

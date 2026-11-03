@@ -1,6 +1,6 @@
 name: Master branch updater.
 
-on:
+"on":
   release:
     types: released
 

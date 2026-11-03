@@ -11,7 +11,7 @@
 
 name: Canary Bot API image.
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       ref:

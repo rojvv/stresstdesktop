@@ -1,5 +1,5 @@
 name: Publish to WinGet
-on:
+"on":
   release:
     types: [released, prereleased]
 jobs:

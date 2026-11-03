@@ -1,6 +1,6 @@
 name: Docker.
 
-on:
+"on":
   push:
     paths:
       - '.github/workflows/docker.yml'
