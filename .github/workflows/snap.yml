@@ -1,6 +1,7 @@
 name: Snap.
 
 "on":
+  workflow_dispatch:
   push:
     # Pushes to the canary or private-ci branches run their own workflows.
     branches-ignore:
@@ -74,7 +75,9 @@ jobs:
           lvm-span-mountpoint: /var/snap/lxd/common/lxd/storage-pools/default/containers
 
       - name: Telegram Desktop snap build.
-        run: sudo -u $USER snap run snapcraft --verbosity=debug
+        run: |
+          sed -i 's/-DCMAKE_BUILD_TYPE=Release/-DCMAKE_BUILD_TYPE=Debug/' snap/snapcraft.yaml
+          sudo -u $USER snap run snapcraft --verbosity=debug
 
       - name: Move artifact.
         if: env.UPLOAD_ARTIFACT == 'true'
